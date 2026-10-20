@@ -1,50 +1,61 @@
-# Панель обращений: проект к разбору
+# Ticket Dashboard: Project Breakdown
 
-Небольшое приложение на React + TypeScript и агент вокруг него. Показывает путь от пользователя coding-агента к инженеру агентной системы.
+A small React + TypeScript application and an agent built around it. It illustrates the progression from a coding-agent user to an agentic system engineer.
 
-## Что внутри
-- `src/` — приложение: список обращений без поиска и фильтров
-- `AGENTS.md` — контекст для агента: структура, команды, правила, критерии готовности
-- `tasks/` — три задачи с критериями
-- `.pi/prompts/` — шаблоны команд `/implement` и `/review` для Pi
-- `agent/v0.ts` — весь агент в одном файле: модель, три инструмента, цикл
-- `agent/core.ts` — тот же цикл как ядро: gate, trace, лимит шагов
-- `agent/coding-agent.ts` — агент-разработчик на ядре: права на файлы, проверки запускает обвязка
-- `agent/tickets-agent.ts` — то же ядро в продукте: агент для оператора поддержки
+## What's Inside
 
-## Запуск приложения
+* `src/` — application: a ticket list without search or filters
+* `AGENTS.md` — agent context: structure, commands, rules, and acceptance criteria
+* `tasks/` — three tasks with criteria
+* `.pi/prompts/` — prompt templates for `/implement` and `/review` commands in Pi
+* `agent/v0.ts` — the entire agent in a single file: model, three tools, execution loop
+* `agent/core.ts` — the same loop as a reusable core: gate, trace, step limit
+* `agent/coding-agent.ts` — a developer agent built on the core: file access permissions, checks executed by the test harness
+* `agent/tickets-agent.ts` — the same core in product use: an agent for a support operator
+
+## Running the Application
+
 ```bash
 npm install
 npm test
 npm run typecheck
 npm run dev
+
 ```
-Нужен Node.js 20.19+ или 22.12+. Приложение откроется на http://localhost:5173.
+
+Requires Node.js 20.19+ or 22.12+. The application will open at http://localhost:5173.
 
 ## Pi
+
 ```bash
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 pi
+
 ```
-При первом запуске в папке проекта подтвердите доверие проекту, иначе шаблоны из `.pi/prompts` не загрузятся. Модель подключается через `/login` и `/model`.
+
+On first launch inside the project directory, confirm that you trust the project; otherwise, templates from `.pi/prompts` will not load. The model is connected via `/login` and `/model`.
 
 ```text
 /implement tasks/01-search-filter.md
 /review tasks/01-search-filter.md
+
 ```
-`/implement` и `/review` — имена файлов-шаблонов из этого проекта, а не встроенные команды Pi.
 
-Версия Pi в записи: впишите вывод `pi --version`.
+`/implement` and `/review` are project-specific template file names, not built-in Pi commands.
 
-## Собственный агент
-Скопируйте `.env.example` в `.env` и заполните адрес API, ключ и модель. Подходит любой OpenAI-совместимый API с поддержкой вызова инструментов. Доступ к модели зависит от условий провайдера.
+Pi version in the recording: enter the output of `pi --version`.
+
+## Custom Agent
+
+Copy `.env.example` to `.env` and configure the API endpoint, key, and model. Any OpenAI-compatible API supporting tool calling will work. Model availability depends on your provider's terms.
 
 ```bash
 npx tsx agent/v0.ts tasks/02-reset-filters.md
 npx tsx agent/coding-agent.ts tasks/03-search-by-customer.md
-npx tsx agent/tickets-agent.ts "Закрой обращения про оплату, которые сейчас в работе"
+npx tsx agent/tickets-agent.ts "Close payment tickets that are currently in progress"
+
 ```
 
-`v0.ts` намеренно наивный: выполняет любую команду, которую попросит модель, и может прочитать любой файл, включая `.env`. Запускайте его только в учебном проекте. В `coding-agent.ts` терминала у модели нет, запись разрешена только в `src/`, а `.env` закрыт.
+`v0.ts` is intentionally naive: it executes any command the model requests and can read any file, including `.env`. Run it only within a sandboxed/educational environment. In `coding-agent.ts`, the model has no terminal access, write permissions are restricted solely to `src/`, and `.env` is protected.
 
-Результат любого агента проверяйте сами: `npm test`, `npm run typecheck` и поведение в браузере.
+Always verify agent outputs yourself: run `npm test`, `npm run typecheck`, and check application behavior in the browser.
